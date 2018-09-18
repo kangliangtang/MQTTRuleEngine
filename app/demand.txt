@@ -1,0 +1,102 @@
+# 2018-8-27 15:48:30
+ /sys/productKey/deviceName/error/warning
+ 包含error、warning 的topic的消息数据写入logs日志warning_error_topic.log
+
+# 2018-8-29 08:23:54
+1.MQTT consumer:
+    DataID 用以查询转发内部kafka topic
+ 1.1订阅的主题：
+ Topic:
+    /sys/corepro_rule
+
+ 1.2接收的消息数据：
+    payload:
+        {
+          "topic":"/sys/{productKey}/{deviceName}/thing/event/{事件标识}/post",
+          "type": "data/warning/error",
+          "id":"00001",
+          "dataid":"{productKey}_{event}_{事件标识}", 
+          "payload":{
+                "productkey":"iot123456",
+                "devicename":"iotdevice",
+                "timestamp":"1534833831.497",
+                "params":{
+                      "current":0,
+                      "voltage":115,
+                      "Status":"OK"
+                      }
+                }
+        }
+
+2.rule_condition
+  从redis缓存获取
+  redis 规则缓存设计(哈希类型):
+      key:  'topic名' +  '_' + '规则头表的id'
+      field: rule  value示例(json格式)："{field:'col1,col2' , rule_condition:'1=1' , actions:[{action_type:1 , action:topicwww}]}"
+
+
+3.Redis的key
+    redis_key = topic + '_' + trh_id
+    例如：redis_key = '/sys/{productKey}/{deviceName}/thing/event/{test001}/post_test001'
+
+    TEST REDIS:
+       '/6439387697231927821/dev20180829/property/post_uuid001'  'rule'  "{'field':'current,voltage,Status' , 'rule_condition':'voltage>150' , 'actions':[{'action_type':1 , 'action':'topictest'}]}"
+
+
+# 2018-9-5 14:52:19
+    MQTT:
+       消费者：采用从消息队列中逐一消费
+
+
+# ------------------规则引擎基础版--------------------------
+# 2018-9-5 15:44:15
+MQTT消费者
+	主题：
+		/data/rule/queue
+
+	数据：
+		{
+		  "topic":"xxxxx",
+		  "dataid":"xxxxx",
+		  "type":"data",
+		  "id":"",
+		  "system_params": {
+			"type": "指定鉴权方式.系统分为oauth(oauth)和数字签名(sign)两种方式鉴权.如果是oauth鉴权必须带token参数",
+			"token": "注意Bearer与token之间有一个空格",
+			"timestamp": "发起请求携带的时间戳,防止恶意调用",
+			"appid": "datakeye574e4aca79611e8914d0a58c0a8020d"
+		  },
+		  "app_params": [
+			{
+			  "sn": "生产数据",
+			  "sssss": "生产数据"
+			}
+		  ]
+		}
+
+	数据库：
+		存储topic
+
+	return :
+		   {
+			   "app_params": [
+				{
+				  "sn": "生产数据",
+				  "sssss": "生产数据"
+				}
+			  ]
+		  }
+
+
+Kafka:
+    订阅主题：
+        dataid
+    生产数据：
+      	{
+		   "app_params": [
+			{
+			  "sn": "生产数据",
+			  "sssss": "生产数据"
+			}
+		  ]
+		}

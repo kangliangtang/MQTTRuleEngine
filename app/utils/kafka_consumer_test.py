@@ -2,7 +2,7 @@ import time
 from kafka import KafkaConsumer
 
 topic_name = 'topictest'
-consumer = KafkaConsumer(topic_name, bootstrap_servers=['172.18.0.25:9092', '172.18.0.47:9092', '172.18.0.44:9092'])
+consumer = KafkaConsumer(topic_name, bootstrap_servers=['120.78.163.250:9092', '172.18.0.47:9092', '172.18.0.44:9092'])
 
 
 for message in consumer:
